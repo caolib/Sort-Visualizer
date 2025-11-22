@@ -35,53 +35,53 @@ const Visualizer: React.FC<VisualizerProps> = ({ step, arraySize, speed }) => {
 
   // Calculate transition duration based on speed
   // We want the movement to be slightly faster than the full step time to allow a small pause
-  const transitionDuration = Math.max(speed * 0.8, 50); 
+  const transitionDuration = Math.max(speed * 0.8, 50);
 
   return (
     <div className="flex-1 w-full min-h-[400px] bg-slate-800/50 rounded-xl border border-slate-700 shadow-xl overflow-hidden relative">
-        {/* Background Grid Lines */}
-        <div className="absolute inset-0 pointer-events-none opacity-10 flex flex-col justify-between p-4 z-0">
-            <div className="w-full h-px bg-slate-400"></div>
-            <div className="w-full h-px bg-slate-400"></div>
-            <div className="w-full h-px bg-slate-400"></div>
-            <div className="w-full h-px bg-slate-400"></div>
-            <div className="w-full h-px bg-slate-400"></div>
-        </div>
+      {/* Background Grid Lines */}
+      <div className="absolute inset-0 pointer-events-none opacity-10 flex flex-col justify-between p-4 z-0">
+        <div className="w-full h-px bg-slate-400"></div>
+        <div className="w-full h-px bg-slate-400"></div>
+        <div className="w-full h-px bg-slate-400"></div>
+        <div className="w-full h-px bg-slate-400"></div>
+        <div className="w-full h-px bg-slate-400"></div>
+      </div>
 
-        {/* Bars Container - using absolute to contain bars */}
-        <div className="absolute inset-x-4 bottom-8 top-8 z-10">
-            {array.map((item, index) => {
-            const state = getBarState(index);
-            const colorClass = getBarColor(state);
-            const heightPercent = item.value; // Values are 10-100
-            
-            // Calculate width and position
-            const widthPercent = 100 / arraySize;
-            const leftPos = index * widthPercent;
+      {/* Bars Container - using absolute to contain bars */}
+      <div className="absolute inset-x-4 bottom-8 top-8 z-10">
+        {array.map((item, index) => {
+          const state = getBarState(index);
+          const colorClass = getBarColor(state);
+          const heightPercent = item.value; // Values are 10-100
 
-            return (
-                <div
-                key={item.id} // Key by ID, not index, to enable move animation
-                className={`absolute bottom-0 rounded-t-md transition-all ease-in-out border-r-2 border-transparent ${colorClass}`}
-                style={{ 
-                    height: `${heightPercent}%`,
-                    width: `${widthPercent}%`,
-                    left: `${leftPos}%`,
-                    transitionDuration: `${transitionDuration}ms`,
-                    transitionProperty: 'left, height, background-color'
-                }}
-                title={`Value: ${item.value}`}
-                >
-                    {/* Only show text if bars are wide enough */}
-                    {arraySize <= 20 && (
-                        <span className="block text-center text-[10px] sm:text-xs font-bold text-white/90 pt-1 w-full truncate">
-                            {item.value}
-                        </span>
-                    )}
-                </div>
-            );
-            })}
-        </div>
+          // Calculate width and position
+          const widthPercent = 100 / arraySize;
+          const leftPos = index * widthPercent;
+
+          return (
+            <div
+              key={item.id} // Key by ID, not index, to enable move animation
+              className={`absolute bottom-0 rounded-t-md transition-all ease-in-out shadow-sm ${colorClass}`}
+              style={{
+                height: `${heightPercent}%`,
+                width: `calc(${widthPercent}% + 1px)`,
+                left: `${leftPos}%`,
+                transitionDuration: `${transitionDuration}ms`,
+                transitionProperty: 'left, height, background-color'
+              }}
+              title={`Value: ${item.value}`}
+            >
+              {/* Only show text if bars are wide enough */}
+              {arraySize <= 20 && (
+                <span className="block text-center text-[10px] sm:text-xs font-bold text-white/90 pt-1 w-full truncate">
+                  {item.value}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
