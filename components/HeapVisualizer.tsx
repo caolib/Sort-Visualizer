@@ -3,9 +3,10 @@ import { SortStep, BarState } from '../types';
 
 interface HeapVisualizerProps {
     step: SortStep;
+    speed: number;
 }
 
-const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step }) => {
+const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step, speed }) => {
     const { array, comparing, swapping, sorted, pivot } = step;
     const n = array.length;
 
@@ -15,6 +16,9 @@ const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step }) => {
     // Layout constants
     const levelHeight = 60; // px
     const containerHeight = (depth + 1) * levelHeight + 60;
+
+    // Calculate transition duration based on speed
+    const transitionDuration = Math.max(speed * 0.8, 50);
 
     const getBarState = (index: number): BarState => {
         if (pivot === index) return BarState.PIVOT;
@@ -70,7 +74,8 @@ const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step }) => {
                                 x2={`${end.x}%`} y2={end.y}
                                 stroke="#475569"
                                 strokeWidth="2"
-                                className="transition-all duration-300"
+                                className="transition-all ease-in-out"
+                                style={{ transitionDuration: `${transitionDuration}ms` }}
                             />
                         );
                     }
@@ -84,7 +89,8 @@ const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step }) => {
                                 x2={`${end.x}%`} y2={end.y}
                                 stroke="#475569"
                                 strokeWidth="2"
-                                className="transition-all duration-300"
+                                className="transition-all ease-in-out"
+                                style={{ transitionDuration: `${transitionDuration}ms` }}
                             />
                         );
                     }
@@ -102,11 +108,12 @@ const HeapVisualizer: React.FC<HeapVisualizerProps> = ({ step }) => {
                 return (
                     <div
                         key={item.id}
-                        className={`absolute flex items-center justify-center w-8 h-8 rounded-full border-2 text-xs font-bold text-white shadow-md transition-all duration-200 z-10 ${colorClass}`}
+                        className={`absolute flex items-center justify-center w-8 h-8 rounded-full border-2 text-xs font-bold text-white shadow-md transition-all ease-in-out z-10 ${colorClass}`}
                         style={{
                             left: `${pos.x}%`,
                             top: `${pos.y}px`,
-                            transform: 'translate(-50%, -50%)'
+                            transform: 'translate(-50%, -50%)',
+                            transitionDuration: `${transitionDuration}ms`
                         }}
                     >
                         {item.value}

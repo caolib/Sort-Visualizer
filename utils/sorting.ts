@@ -318,7 +318,6 @@ export const generateInsertionSortTrace = (initialArray: SortableItem[]): SortSt
   const steps: SortStep[] = [];
   const array = initialArray.map(item => ({ ...item }));
   const n = array.length;
-  // In insertion sort, the sub-array 0..i-1 is always sorted
   const sortedIndices: number[] = [0];
 
   steps.push({
@@ -326,72 +325,52 @@ export const generateInsertionSortTrace = (initialArray: SortableItem[]): SortSt
     comparing: [],
     swapping: [],
     sorted: [0],
-    description: "Initial State (First element is considered sorted)"
+    description: "Initial State"
   });
 
   for (let i = 1; i < n; i++) {
-    const key = { ...array[i] }; // Deep copy key
-    let j = i - 1;
+    let j = i;
 
     steps.push({
       array: array.map(item => ({ ...item })),
       comparing: [i],
       swapping: [],
       sorted: Array.from({ length: i }, (_, k) => k),
-      description: `Selected key ${key.value} to insert`
+      description: `Selected element ${array[i].value} to insert`
     });
 
-    // Create a "hole" at i visually? 
-    // Actually, we usually keep the key value there until overwritten.
-    // But to avoid ID conflicts if we shift, we need to be careful.
-
-    while (j >= 0 && array[j].value > key.value) {
+    while (j > 0 && array[j].value < array[j - 1].value) {
       steps.push({
         array: array.map(item => ({ ...item })),
-        comparing: [j, j + 1],
+        comparing: [j, j - 1],
         swapping: [],
         sorted: Array.from({ length: i }, (_, k) => k),
-        description: `Comparing ${array[j].value} > ${key.value}`
+        description: `Comparing ${array[j].value} < ${array[j - 1].value}`
       });
-
-      // Shift array[j] to array[j+1]
-      // CRITICAL FIX: We must ensure unique IDs.
-      // The item moves from j to j+1. So array[j+1] gets array[j]'s ID.
-      // array[j] conceptually becomes empty or a duplicate. 
-      // We give array[j] a temporary ID to avoid key collision.
-
-      array[j + 1] = array[j];
-      // We need to modify array[j] to have a different ID so React doesn't see two keys
-      // But we want to see the bar move from j to j+1.
-      // So the snapshot should show the state AFTER the move?
-      // Or show the state with the duplicate?
-
-      // Let's create a visual snapshot where the item at j+1 is the "real" one moving,
-      // and the item at j is a "ghost" or just hidden/dimmed, with a unique ID.
-
-      const visualArray = array.map(item => ({ ...item }));
-      visualArray[j] = {
-        ...visualArray[j],
-        id: `${visualArray[j].id}-ghost-${Date.now()}-${Math.random()}`
-      };
 
       steps.push({
-        array: visualArray,
-        comparing: [j, j + 1],
-        swapping: [j, j + 1],
+        array: array.map(item => ({ ...item })),
+        comparing: [j, j - 1],
+        swapping: [j, j - 1],
         sorted: Array.from({ length: i }, (_, k) => k),
-        description: `Moving ${array[j + 1].value} to position ${j + 1}`
+        description: `Swapping ${array[j].value} and ${array[j - 1].value}`
       });
 
-      // In the actual array logic for the next iteration, array[j] is still there 
-      // but will be overwritten or shifted again. 
-      // To prevent persistent duplicate IDs in the `array` state itself:
-      array[j] = { ...array[j], id: `${array[j].id}-temp` };
+      // Perform Swap
+      const temp = array[j];
+      array[j] = array[j - 1];
+      array[j - 1] = temp;
 
-      j = j - 1;
+      steps.push({
+        array: array.map(item => ({ ...item })),
+        comparing: [],
+        swapping: [j, j - 1],
+        sorted: Array.from({ length: i }, (_, k) => k),
+        description: "Swapped."
+      });
+
+      j--;
     }
-
-    array[j + 1] = key; // Insert the key
 
     // Now 0..i are sorted
     const newSorted = Array.from({ length: i + 1 }, (_, k) => k);
@@ -400,7 +379,7 @@ export const generateInsertionSortTrace = (initialArray: SortableItem[]): SortSt
       comparing: [],
       swapping: [],
       sorted: newSorted,
-      description: `Inserted ${key.value} at position ${j + 1}`
+      description: `Element inserted at position ${j}`
     });
   }
 

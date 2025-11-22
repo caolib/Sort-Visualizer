@@ -333,7 +333,7 @@ const App: React.FC = () => {
 
           {/* Heap Structure Visualizer */}
           {algorithm === 'Heap Sort' && currentStep && (
-            <HeapVisualizer step={currentStep} />
+            <HeapVisualizer step={currentStep} speed={speed} />
           )}
 
           {/* Controls */}
