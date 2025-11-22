@@ -1,0 +1,5 @@
+{
+  "name": "Bubble Sort Visualizer",
+  "description": "An interactive, step-by-step visualization of the Bubble Sort algorithm using React and Tailwind CSS.",
+  "requestFramePermissions": []
+}
